@@ -22,7 +22,7 @@
 - name: (httpd_install) [3/4] New self-signed SSL cert/key pair is generated and deployed
   command: openssl req -x509 -newkey rsa:2048 -nodes -subj "{{ httpd_ssl_cert_subj_string }}" -days 3650 -keyout {{ httpd_SSLCertificateKeyFile }} -out {{ httpd_SSLCertificateFile }}
   args:
-    creates: /etc/httpd/ssl/apache.pem
+    creates: "{{ httpd_SSLCertificateFile }}"
 
 - name: (httpd_install) [4/4] Apache is enabled on boot
   service:

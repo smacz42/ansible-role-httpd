@@ -14,6 +14,7 @@ httpd_LoadModules:
   - log_config
   - mime
   - mime_magic
+  - rewrite
 
 httpd_LogLevel: warn
 
@@ -51,7 +52,7 @@ httpd_ErrorLog_ssl: logs/ssl_error_log
 httpd_AccessLog_ssl: logs/ssl_access_log
 httpd_LogLevel_ssl: warn
 #
-httpd_SSLCertificateFile:  /etc/httpd/ssl/apache.crt
+httpd_SSLCertificateFile:  /etc/httpd/ssl/apache.pem
 httpd_SSLCertificateKeyFile: /etc/httpd/ssl/apache.key
 #
 ## According to:
