@@ -30,7 +30,7 @@ ServerTokens {{ httpd_ServerTokens }}
 </Directory>
 
 {% for v in httpd_LoadModules %}
-LoadModule {{ v }}_module modules/mod_{{ v }}.so
+#LoadModule {{ v }}_module modules/mod_{{ v }}.so
 {% endfor %}
 
 # Mime types

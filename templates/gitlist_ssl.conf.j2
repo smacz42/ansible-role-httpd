@@ -6,7 +6,7 @@
 
 # General setup for the virtual host, inherited from global configuration
 
-DocumentRoot {{ gitlist_root_dir }}
+DocumentRoot {{ httpd_DocumentRoot }}
 ServerName {{ httpd_ServerName }}:443
 
 # Use separate log files for the SSL virtual host; note that LogLevel
@@ -26,7 +26,7 @@ LogLevel {{ httpd_LogLevel_ssl }}
 </Files>
 
 # Further relax access to the default document root:
-<Directory "{{ gitlist_root_dir }}">
+<Directory "{{ httpd_DocumentRoot }}">
     Options Indexes FollowSymLinks
     AllowOverride All
     Require all granted
