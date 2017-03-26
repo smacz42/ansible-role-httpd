@@ -4,7 +4,7 @@
 
 # General setup for the virtual host, inherited from global configuration
 
-DocumentRoot {{ jekyll_root_dir }}
+DocumentRoot {{ kanboard_root_dir }}
 ServerName {{ httpd_ServerName }}:443
 
 # Use separate log files for the SSL virtual host; note that LogLevel
@@ -24,9 +24,9 @@ LogLevel {{ httpd_LogLevel_ssl }}
 </Files>
 
 # Further relax access to the default document root:
-<Directory "{{ jekyll_root_dir }}">
+<Directory "{{ kanboard_root_dir }}">
     Options Indexes FollowSymLinks
-    AllowOverride None
+    AllowOverride FileInfo Options=All,MultiViews AuthConfig
     Require all granted
 </Directory>
 

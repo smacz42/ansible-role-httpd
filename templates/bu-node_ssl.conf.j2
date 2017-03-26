@@ -1,34 +1,47 @@
 # {{ ansible_managed }}
 
+LoadModule wsgi_module /usr/lib64/python3.4/site-packages/mod_wsgi/server/mod_wsgi-py34.cpython-34m.so
+
+# WSGI
+
+WSGIScriptAlias /{{ bu_node_custom_subdir }} {{ bu_node_root_dir }}/bitcoinnodestats/wsgi.py
+WSGIPythonHome {{ bu_node_root_dir }}/env
+WSGIPythonPath {{ bu_node_root_dir }}
+
 <VirtualHost _default_:443>
 
 # General setup for the virtual host, inherited from global configuration
 
-DocumentRoot {{ jekyll_root_dir }}
+DocumentRoot {{ bu_node_root_dir }}
 ServerName {{ httpd_ServerName }}:443
+
+Alias {% if bu_node_custom_subdir %}/{{ bu_node_custom_subdir }}{% endif %}/static/ {{ bu_node_root_dir }}/static/
+Alias {% if bu_node_custom_subdir %}/{{ bu_node_custom_subdir }}{% endif %}/static/media/ {{ bu_node_root_dir }}/static/media/
+
+<Directory {{bu_node_root_dir }}/static>
+Require all granted
+</Directory>
+
+<Directory {{bu_node_root_dir }}/static/media/>
+Require all granted
+</Directory>
+
+<Directory {{ bu_node_root_dir }}>
+<Files wsgi.py>
+Require all granted
+</Files>
+</Directory>
+
+# Prevent .htaccess and .htpasswd files from being viewed by Web clients. 
+<Files ".ht*">
+    Require all denied
+</Files>
 
 # Use separate log files for the SSL virtual host; note that LogLevel
 # is not inherited from httpd.conf.
 ErrorLog {{ httpd_ErrorLog_ssl }}
 TransferLog {{ httpd_AccessLog_ssl }}
 LogLevel {{ httpd_LogLevel_ssl }}
-
-# Load index.html if directory is requested
-<IfModule dir_module>
-    DirectoryIndex index.html
-</IfModule>
-
-# Prevent .htaccess and .htpasswd files from being viewed by Web clients.
-<Files ".ht*">
-    Require all denied
-</Files>
-
-# Further relax access to the default document root:
-<Directory "{{ jekyll_root_dir }}">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
 
 <IfModule log_config_module>
     LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
@@ -42,34 +55,7 @@ LogLevel {{ httpd_LogLevel_ssl }}
     CustomLog "{{ httpd_AccessLog_ssl }}" combined
 </IfModule>
 
-# CGI
-<IfModule alias_module>
-    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
-</IfModule>
-
-<Directory "{{ httpd_DocumentRoot }}/cgi-bin">
-    AllowOverride None
-    Options None
-    Require all granted
-</Directory>
-
-# Mime types
-<IfModule mime_module>
-    TypesConfig /etc/mime.types
-
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-    AddType text/html .shtml
-    AddOutputFilter INCLUDES .shtml
-</IfModule>
-
 AddDefaultCharset UTF-8
-
-<IfModule mime_magic_module>
-    MIMEMagicFile conf/magic
-</IfModule>
-
-EnableSendfile on
 
 ########################### SSL Config
 #   SSL Engine Switch:
@@ -179,13 +165,6 @@ SSLCertificateKeyFile {{ httpd_SSLCertificateKeyFile }}
 #     This enables optimized SSL connection renegotiation handling when SSL
 #     directives are used in per-directory context. 
 #SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire
-<Files ~ "\.(cgi|shtml|phtml|php3?)$">
-    SSLOptions +StdEnvVars
-</Files>
-<Directory "/var/www/cgi-bin">
-    SSLOptions +StdEnvVars
-</Directory>
-
 #   SSL Protocol Adjustments:
 #   The safe and default but still SSL/TLS standard compliant shutdown
 #   approach is that mod_ssl sends the close notify alert but doesn't wait for

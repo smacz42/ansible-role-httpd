@@ -36,6 +36,8 @@ httpd_config_file: '/etc/httpd/conf/httpd.conf'
 # Scripting support
 httpd_scripting: 'none'
 
+httpd_tls_enforce: true
+
 # Main configuration
 httpd_ServerRoot: '/etc/httpd'
 httpd_Listen: 80
